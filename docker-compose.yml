@@ -69,15 +69,22 @@ services:
       # Service definition
       - "traefik.http.services.librechat.loadbalancer.server.port=${PORT:-3080}"
       - "traefik.http.services.librechat.loadbalancer.passhostheader=true"
-      - "traefik.http.services.librechat.loadbalancer.responseforwarding.flushinterval=100ms"
+      - "traefik.http.services.librechat.loadbalancer.responseforwarding.flushinterval=1s"
       
       # Header middleware for proper proxy forwarding
       - "traefik.http.middlewares.librechat-headers.headers.customRequestHeaders.X-Forwarded-Host=chat.prometheusags.ai"
       - "traefik.http.middlewares.librechat-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
       - "traefik.http.middlewares.librechat-headers.headers.customRequestHeaders.X-Forwarded-For=chat.prometheusags.ai"
       
-      # Apply the headers middleware to the main router
-      - "traefik.http.routers.librechat.middlewares=librechat-headers"
+      # Timeout middleware configuration
+      - "traefik.http.middlewares.long-timeout.forwardingTimeouts.responseTimeout=600s"
+      - "traefik.http.middlewares.long-timeout.forwardingTimeouts.idleTimeout=600s"
+      
+      # WebSocket timeout middleware
+      - "traefik.http.middlewares.websocket-timeouts.forwardingTimeouts.idleTimeout=600s"
+      
+      # Apply the headers and timeout middleware to the main router
+      - "traefik.http.routers.librechat.middlewares=librechat-headers,long-timeout"
       
       # WebSocket configuration
       - "traefik.http.routers.librechat-ws.rule=Host(`chat.prometheusags.ai`) && PathPrefix(`/ws`)"
@@ -90,7 +97,7 @@ services:
       - "traefik.http.middlewares.websocket-headers.headers.customRequestHeaders.Upgrade=websocket"
       
       # Apply WebSocket middleware to the WebSocket router
-      - "traefik.http.routers.librechat-ws.middlewares=websocket-headers,librechat-headers"
+      - "traefik.http.routers.librechat-ws.middlewares=websocket-headers,librechat-headers,websocket-timeouts"
     deploy:
       resources:
         reservations:
