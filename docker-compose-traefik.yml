@@ -1,0 +1,61 @@
+services:
+  traefik:
+    image: "traefik:v3.3.6"
+    container_name: "traefik"
+    restart: always
+    command:
+      - "--api.insecure=true"  # We'll keep this for now, but we're securing it via a domain
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # EntryPoints
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      # Certificate resolver
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=tjames@prometheusags.ai"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard port
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - traefik_network
+    labels:
+      # Enable Traefik on itself
+      - "traefik.enable=true"
+      
+      # Dashboard configuration (secure)
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik2.prometheusags.ai`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      
+      # HTTP to HTTPS redirect for dashboard
+      - "traefik.http.routers.traefik-dashboard-http.rule=Host(`traefik2.prometheusags.ai`)"
+      - "traefik.http.routers.traefik-dashboard-http.entrypoints=web"
+      - "traefik.http.routers.traefik-dashboard-http.middlewares=redirect-to-https@docker"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      
+      # Optional: Add security with basic auth
+      # - "traefik.http.routers.traefik-dashboard.middlewares=auth-middleware"
+      # - "traefik.http.middlewares.auth-middleware.basicauth.users=admin:$$apr1$$n1qr9nv9$$BhScwqucU3b0C1sxj2/BZ0"
+
+  whoami:
+    image: "traefik/whoami"
+    container_name: "simple-service"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami2.prometheusags.ai`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
+    networks:
+      - traefik_network
+
+networks:
+  traefik_network:
+    name: traefik_network
+    external: true
