@@ -22,42 +22,15 @@ services:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
       - RAG_PORT=${RAG_PORT:-8000}
       - RAG_API_URL=http://rag_api:${RAG_PORT:-8000}
-      # Email configuration - completely disable email
-      - EMAIL_SERVICE=resend
       - EMAIL_VERIFICATION=false
       - ALLOW_UNVERIFIED_EMAIL_LOGIN=true
-      - EMAIL_HOST=smtp.resend.com
-      - EMAIL_PORT=587
-      - EMAIL_USERNAME=${RESEND_API_KEY}
-      - EMAIL_PASSWORD=
-      - EMAIL_FROM_NAME=${APP_TITLE:-PrometheusChat}
-      - EMAIL_FROM=${APP_TITLE:-PrometheusChat}
       - ALLOW_PASSWORD_RESET=true
       - ALLOW_REGISTRATION_WITHOUT_EMAIL=false
-      # Add environment variable for Traefik integration
-      - APP_TITLE=${APP_TITLE:-PrometheusChat}
-      - DOMAIN_CLIENT=https://chat.prometheusags.ai
-      - DOMAIN_SERVER=https://chat.prometheusags.ai
-      # WebSocket configuration
-      - SOCKET_PATH=/ws
-      # Special environment variables to handle proxy timeouts
-      - NODE_OPTIONS=--max-http-header-size=16384
-      - SOCKET_IO_PING_TIMEOUT=60000
-      - SOCKET_IO_PING_INTERVAL=25000
-      - REQUEST_TIMEOUT=300000
-      - SERVER_PORT=${PORT:-3080}
-      # Increase MongoDB connection timeout
-      - MONGODB_DIRECT_CONNECTION=true
-      - MONGODB_TIMEOUT=20000
-      # Enable trust proxy since we're behind a reverse proxy
-      - TRUST_PROXY=1
-      # Set debug logging
-      - DEBUG_LOGGING=true
     volumes:
       # Comment out the .env binding to ensure container environment variables take precedence
-      # - type: bind
-      #   source: ./.env
-      #   target: /app/.env
+      - type: bind
+        source: ./.env
+        target: /app/.env
       - ./images:/app/client/public/images:rw
       - ./uploads:/app/uploads:rw
       - ./logs:/app/api/logs:rw
