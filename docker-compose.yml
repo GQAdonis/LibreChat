@@ -50,7 +50,6 @@ services:
       - ./logs:/app/api/logs:rw
       - ./librechat.yaml:/app/librechat.yaml:ro
     networks:
-      - default
       - traefik_network
     labels:
       - "traefik.enable=true"
@@ -69,19 +68,21 @@ services:
       # Service definition
       - "traefik.http.services.librechat.loadbalancer.server.port=${PORT:-3080}"
       - "traefik.http.services.librechat.loadbalancer.passhostheader=true"
-      - "traefik.http.services.librechat.loadbalancer.responseforwarding.flushinterval=1s"
-      - "traefik.http.services.librechat.loadbalancer.server.responseTimeout=600s"
+      
+      # Timeout configuration for Traefik v3
+      - "traefik.http.middlewares.librechat-timeout.headers.customResponseHeaders.X-Timeout=600"
+      - "traefik.http.routers.librechat.middlewares=librechat-headers@docker,librechat-timeout@docker"
       
       # Header middleware for proper proxy forwarding
       - "traefik.http.middlewares.librechat-headers.headers.customRequestHeaders.X-Forwarded-Host=chat.prometheusags.ai"
       - "traefik.http.middlewares.librechat-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
       - "traefik.http.middlewares.librechat-headers.headers.customRequestHeaders.X-Forwarded-For=chat.prometheusags.ai"
       
-      # Timeout middleware configuration - using correct syntax for Traefik v3
+      # Timeout middleware configuration for Traefik v3
       - "traefik.http.middlewares.long-timeout.headers.customResponseHeaders.X-Timeout-Config=enabled"
       
-      # Apply only the headers middleware to the main router to fix 404 issues
-      - "traefik.http.routers.librechat.middlewares=librechat-headers"
+      # Apply the headers middleware to the main router
+      # This is now handled in the combined middleware chain above
       
       # WebSocket configuration
       - "traefik.http.routers.librechat-ws.rule=Host(`chat.prometheusags.ai`) && PathPrefix(`/ws`)"
@@ -93,8 +94,11 @@ services:
       - "traefik.http.middlewares.websocket-headers.headers.customRequestHeaders.Connection=Upgrade"
       - "traefik.http.middlewares.websocket-headers.headers.customRequestHeaders.Upgrade=websocket"
       
-      # Apply WebSocket middleware to the WebSocket router - removing timeout middleware to fix 404
-      - "traefik.http.routers.librechat-ws.middlewares=websocket-headers,librechat-headers"
+      # Create a middleware chain for WebSocket
+      - "traefik.http.middlewares.ws-chain.chain.middlewares=websocket-headers@docker,librechat-headers@docker"
+      
+      # Apply the middleware chain to the WebSocket router
+      - "traefik.http.routers.librechat-ws.middlewares=ws-chain@docker"
     deploy:
       resources:
         reservations:
@@ -118,7 +122,6 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - default
       - traefik_network
 
   meilisearch:
@@ -140,7 +143,6 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - default
       - traefik_network
 
   vectordb:
@@ -154,7 +156,6 @@ services:
     volumes:
       - pgdata2:/var/lib/postgresql/data
     networks:
-      - default
       - traefik_network
 
   rag_api:
@@ -169,7 +170,6 @@ services:
     env_file:
       - .env
     networks:
-      - default
       - traefik_network
     deploy:
       resources:
@@ -183,6 +183,5 @@ volumes:
   pgdata2:
 
 networks:
-  default:
   traefik_network:
     external: true
