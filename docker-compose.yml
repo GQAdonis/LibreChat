@@ -27,6 +27,8 @@ services:
       - ALLOW_UNVERIFIED_EMAIL_LOGIN=true
       - ALLOW_PASSWORD_RESET=false
       - ALLOW_REGISTRATION_WITHOUT_EMAIL=true
+      - EMAIL_USERNAME=
+      - EMAIL_PASSWORD=
     volumes:
       # Comment out the .env binding to ensure container environment variables take precedence
       - type: bind
