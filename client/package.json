@@ -1,7 +1,7 @@
 {
-  "name": "@librechat/frontend",
+  "name": "@prometheus-ags/frontend",
   "version": "v0.7.8",
-  "description": "",
+  "description": "Prometheus Agentic Growth Solutions - Advanced AI-powered chat platform frontend",
   "type": "module",
   "scripts": {
     "data-provider": "cd .. && npm run build:data-provider",
@@ -18,15 +18,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danny-avila/LibreChat.git"
+    "url": "git+https://github.com/prometheus-ags/librechat.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "prometheus",
+    "agentic-growth",
+    "ai",
+    "chat",
+    "artificial-intelligence",
+    "machine-learning",
+    "conversational-ai",
+    "react",
+    "typescript"
+  ],
+  "author": "Prometheus Agentic Growth Solutions",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/danny-avila/LibreChat/issues"
+    "url": "https://github.com/prometheus-ags/librechat/issues"
   },
-  "homepage": "https://librechat.ai",
+  "homepage": "https://librechat.prometheusags.ai",
   "dependencies": {
     "@ariakit/react": "^0.4.15",
     "@ariakit/react-core": "^0.4.17",

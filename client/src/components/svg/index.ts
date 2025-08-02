@@ -18,6 +18,7 @@ export { default as MessagesSquared } from './MessagesSquared';
 export { default as StopGeneratingIcon } from './StopGeneratingIcon';
 export { default as RegenerateIcon } from './RegenerateIcon';
 export { default as ContinueIcon } from './ContinueIcon';
+export { PrometheusLogo, PrometheusLogoIcon, PrometheusLogoLarge, PrometheusLogoSVG, PrometheusFlameIcon } from './PrometheusLogo';
 export { default as GoogleIcon } from './GoogleIcon';
 export { default as FacebookIcon } from './FacebookIcon';
 export { default as OpenIDIcon } from './OpenIDIcon';

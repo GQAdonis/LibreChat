@@ -13,12 +13,18 @@ const math = require('./math');
  * @returns {Boolean}
  */
 function checkEmailConfig() {
-  return (
-    ((!!process.env.EMAIL_SERVICE && process.env.EMAIL_SERVICE !== 'none') || !!process.env.EMAIL_HOST) &&
-    !!process.env.EMAIL_USERNAME &&
-    !!process.env.EMAIL_PASSWORD &&
-    !!process.env.EMAIL_FROM
-  );
+  const serviceCheck = !!process.env.EMAIL_SERVICE && process.env.EMAIL_SERVICE !== 'none';
+  const hostCheck = !!process.env.EMAIL_HOST;
+  const usernameCheck = !!process.env.EMAIL_USERNAME;
+  const passwordCheck = !!process.env.EMAIL_PASSWORD;
+  const fromCheck = !!process.env.EMAIL_FROM;
+  
+  const result = (serviceCheck || hostCheck) && usernameCheck && passwordCheck && fromCheck;
+  
+  const logger = require('~/config/winston');
+  logger.info(`[checkEmailConfig] SERVICE=${process.env.EMAIL_SERVICE}, serviceCheck=${serviceCheck}, hostCheck=${hostCheck}, usernameCheck=${usernameCheck}, passwordCheck=${passwordCheck}, fromCheck=${fromCheck}, RESULT=${result}`);
+  
+  return result;
 }
 
 module.exports = {

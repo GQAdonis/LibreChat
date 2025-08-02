@@ -56,8 +56,10 @@ const sendEmail = async ({ email, subject, payload, template, throwError = true 
 
     // Mailer service definition has precedence
     if (process.env.EMAIL_SERVICE) {
+      logger.info(`[sendEmail] Using EMAIL_SERVICE: "${process.env.EMAIL_SERVICE}"`);
       transporterOptions.service = process.env.EMAIL_SERVICE;
     } else {
+      logger.info(`[sendEmail] Using EMAIL_HOST: "${process.env.EMAIL_HOST}" and EMAIL_PORT: "${process.env.EMAIL_PORT ?? 25}"`);
       transporterOptions.host = process.env.EMAIL_HOST;
       transporterOptions.port = process.env.EMAIL_PORT ?? 25;
     }

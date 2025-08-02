@@ -1,19 +1,22 @@
-// const { fontFamily } = require('tailwindcss/defaultTheme');
+const { fontFamily } = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
-  // darkMode: 'class',
   darkMode: ['class'],
   theme: {
-    fontFamily: {
-      sans: ['Inter', 'sans-serif'],
-      mono: ['Roboto Mono', 'monospace'],
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px'
+      }
     },
-    // fontFamily: {
-    //   sans: ['Söhne', 'sans-serif'],
-    //   mono: ['Söhne Mono', 'monospace'],
-    // },
+    fontFamily: {
+      sans: ['Roboto', ...fontFamily.sans],
+      mono: ['Roboto Mono', 'monospace'],
+      heading: ['Inter', ...fontFamily.sans]
+    },
     extend: {
       width: {
         authPageWidth: '370px',
@@ -93,7 +96,22 @@ module.exports = {
         'border-medium-alt': 'var(--border-medium-alt)',
         'border-heavy': 'var(--border-heavy)',
         'border-xheavy': 'var(--border-xheavy)',
-        /* These are test styles */
+        /* Prometheus brand colors */
+        prometheus: {
+          navy: '#0a192d',
+          lightNavy: '#0f2440',
+          yellow: '#ffdd00',
+          orange: '#ff5500',
+          red: '#ff4d4d',
+          turquoise: '#00a3a3',
+          lightBlue: '#4d9fff',
+          lavender: '#9d8df1',
+          ultraLightGray: '#f8f8f8',
+          lightGray: '#f5f5f5',
+          mediumGray: '#cccccc',
+          darkGray: '#333333'
+        },
+        /* shadcn-ui compatible colors */
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ['switch-unchecked']: 'hsl(var(--switch-unchecked))',

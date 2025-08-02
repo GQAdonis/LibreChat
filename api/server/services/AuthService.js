@@ -215,6 +215,7 @@ const registerUser = async (user, additionalData = {}) => {
     };
 
     const emailEnabled = checkEmailConfig();
+    logger.info(`[registerUser] Email enabled: ${emailEnabled}, EMAIL_SERVICE: ${process.env.EMAIL_SERVICE}`);
     const disableTTL = isEnabled(process.env.ALLOW_UNVERIFIED_EMAIL_LOGIN);
     const newUser = await createUser(newUserData, disableTTL, true);
     newUserId = newUser._id;
